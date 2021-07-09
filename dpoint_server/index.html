@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta http-equiv='X-UA-Compatible' content="IE=edge">
+		<meta name='viewport' content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+		<link rel="stylesheet" href="css/bootstrap.min.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+		<title>ZeroDream DRIFT POINT</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-8">
+				<h2>ZeroDream DRIFT POINT</h2>
+				<table class="table" id="dpoints"></table>
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery.min.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<script>
+		var ws;
+		var connected = false;
+		$(function() {
+			function websocket () {
+				// Change the hk416.org to your drift point server hostname
+				ws = new WebSocket("wss://hk416.org/dpoint.socket/");
+				ws.onopen = function(event){
+					console.log('Connect successful');
+					connected = true;
+				};
+				ws.onmessage = function (event) {
+					try {
+						var json = JSON.parse(event.data);
+						$("#dpoints").html("<tr><th>ID</th><th>Name</th><th>Point</th><th>Health</th></tr>");
+						for(var k in json) {
+							$("#dpoints").append("<tr><td>" + json[k].id + "</td><td>" + json[k].name + "</td><td>" + json[k].point + "</td><td>" + json[k].health + "</td></tr>");
+						}
+					} catch(e) {
+						console.error(e);
+					}
+				}
+				ws.onclose = function(event) {
+					connected = false;
+					console.log("Connect close, status: " + this.readyState);
+					websocket();
+				};
+				ws.onerror = function(event) {
+					console.log("WebSocket error.");
+				};
+			}
+			websocket();
+			setInterval(function() {
+				if(connected) {
+					ws.send(JSON.stringify({
+						'action': 'getpoint'
+					}));
+				}
+			}, 500);
+		});
+	</script>
+</html>
