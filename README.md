@@ -30,7 +30,7 @@ ensure dpoint
 
 dpoint - FiveM Drift Point script
 
-Copyright (C) 2020 Akkariin
+Copyright (C) 2021 Akkariin
 
 This program Is free software: you can redistribute it And/Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option) any later version.
 
